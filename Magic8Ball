@@ -1,0 +1,60 @@
+#!/bin/bash
+clear
+
+echo "Do you seek the wisdom of the Magic 8 ball? (y/n)"
+read PLAY
+CLEANPLAY=`echo $PLAY | cut -c 1 | tr [:upper:] [:lower:]`
+while [[ $CLEANPLAY = "y" ]]
+do
+  if [[ $CLEANPLAY = "y" ]]; then
+    echo "Let's play a game!"
+    echo "What is the wisdom you seek from the magic 8 ball????"
+    read QUEST
+    RNUM=`echo $(( RANDOM % 8 ) + 1 ))`
+    #echo "You rolled a: $RNUM"
+    if [[ $RNUM = 1 ]]; then
+      echo "Try again later"
+    elif [[ $RNUM = 2 ]]; then
+      #statements
+      echo "SURE"
+    elif [[ $RNUM = 3 ]]; then
+      #statements
+      echo "Possibly YES!"
+    elif [[ $RNUM = 4 ]]; then
+      #statements
+      echo "Do not ask me again"
+    elif [[ $RNUM = 5 ]]; then
+      #statements
+      echo "Don't count on it"
+    elif [[ $RNUM = 6 ]]; then
+      #statements
+      echo "Signs point to yes!"
+    elif [[ $RNUM = 7 ]]; then
+      #statements
+      echo "When pigs fly"
+    elif [[ $RNUM = 8 ]]; then
+      #statements
+      echo "Outlook is a terrible product because its microsoft"
+    fi
+    echo "Do you have another question for our 8 ball of magical wisdom?"
+    read PLAY
+    CLEANPLAY=`echo $PLAY | cut -c 1 | tr [:upper:] [:lower:]`
+    #echo $CLEANPLAY
+    # if [[ $CLEANPLAY = y ]]; then
+    #   echo "play again selected"
+    #   # ./8ball.sh
+    # elif [[ $CLEANPLAY2 = "n" ]]; then
+    #   echo "Quitter"
+    #   exit
+    # else
+    #   echo "Not an ok answer"
+    #   exit
+    # fi
+  elif [[ $CLEANPLAY = "n" ]]; then
+    #statements
+    echo "Quitter"
+  else
+    #statements
+    echo "You have a virus, Thanks Andrew."
+  fi
+done
