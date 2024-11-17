@@ -1,0 +1,14 @@
+#!/bin/bash
+
+clear
+echo "What is the username you would like group information about?"
+read UNAME
+
+USERID=$(grep $UNAME /etc/passwd | cut -d ":" -f 3)
+GROUPID=$(grep $UNAME /etc/passwd | cut -d ":" -f 4)
+IGROUPNAME=$(grep $GROUPID /etc/group | cut -d ":" -f 1)
+AGROUPNAME=$(grep $UNAME /etc/group | cut -d ":" -f 1 | tr '\n' ',')
+
+echo "User $UNAME has an ID of: $USERID and a GID of $GROUPID."
+echo "User $UNAME has an initial group name of $IGROUPNAME."
+echo "User $UNAME is in the following additional group(s): ${AGROUPNAME%,}."
