@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Create groups
+groupadd maingroup
+groupadd group1
+groupadd group2
+groupadd group3
+
+# Create users and assign them to the maingroup
+useradd -m -G maingroup student01
+useradd -m -G maingroup student02
+useradd -m -G maingroup student03
+
+# Assign each student to their specific group
+usermod -a -G group1 student01
+usermod -a -G group2 student02
+usermod -a -G group3 student03
+
+# Display results
+echo "Groups and users created successfully!"
+echo "Users and their group memberships:"
+for user in student01 student02 student03; do
+    echo "$user is in groups: $(groups $user | cut -d ':' -f 2)"
+done
