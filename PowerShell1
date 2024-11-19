@@ -1,0 +1,62 @@
+#-Variables---------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Define the reports folder path
+$reportsFolder = "C:\reports"
+
+# Get computer information, found from a Google search of 'how to get PC name with PowerShell'
+# https://stackoverflow.com/questions/1169891/how-do-i-get-the-localhost-name-in-powershell
+$computerName = $env:COMPUTERNAME
+
+#https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-netipaddress?view=windowsserver2022-ps&form=MG0AV3
+#This is the document I used to get the IPv4 address, it explains and gives examples of how to use Get-NetIPAddress and Where-Object to filter the data
+$ipv4Addresses = Get-NetIPAddress | Where-Object { $_.AddressFamily -eq 'IPv4'} | Select-Object -ExpandProperty IPAddress
+
+#https://learn.microsoft.com/en-us/powershell/module/cimcmdlets/get-ciminstance?view=powershell-7.4&form=MG0AV3
+#https://learn.microsoft.com/en-us/powershell/scripting/samples/getting-wmi-objects--get-ciminstance-?view=powershell-7.4
+#These are the documents I references to learn how to use Get-CimInstance and use it to get the Win32_OperatingSystem
+$osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
+
+#Knowing I have all the OS data I asked ChatGPT to help me with filtering it to just the BuildNumber and learned that if you wrap
+#that command in ( ) you can use '.BuildNumber' to return just that piece of data
+$buildNumber = (Get-CimInstance -ClassName Win32_OperatingSystem).BuildNumber
+
+#Since 'Get-CimInstance -ClassName Win32_OperatingSystem' is saved to '$osInfo' you can use that variable instead of rewriting to make it cleaner/shorter
+$caption = $osInfo.Caption
+
+# I couldn't find a referance to Service Pack Major in the MS documentation, but I did find it in this Spiceworks form
+#https://community.spiceworks.com/t/gathering-inventory-information-from-computers-using-list-from-ad/728374
+$servicePackMajorVersion = $osInfo.ServicePackMajorVersion
+
+#-File Content------------------------------------------------------------------------------------------------------------------------------------------------
+
+# https://stackoverflow.com/questions/32388896/creating-tables-in-powershell
+# https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-arrays?view=powershell-7.4
+# https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-hashtable?view=powershell-7.4
+# Reading this Stackoverflow thred I was able to determine using an array for the table should work, then referenced these array and hashtable documents
+# this help me understand that I can create a varible to store the table in and pass other varibles into so that it closely resembles the sample
+# still looking into how to better format the IPv4 addresses so they are not listed on the same line
+# This was the final resource I used to format this table (under The Select-String cmdlet):
+# https://devblogs.microsoft.com/powershell/parsing-text-with-powershell-1-3/
+$PCINFO = @"
+Computer Name
+-------------------
+$computerName
+
+IPv4 Address(es)
+-------------------
+$ipv4Addresses
+
+OS Info
+-------------------
+BuildNumber         caption                          servicepackmajorversion
+$buildNumber        $caption                         $servicePackMajorVersion
+"@
+
+#-File creation----------------------------------------------------------------------------------------------------------------------------------------------
+# This takes in the original file path C:\reports and appends the computer name
+$filePath = Join-Path -Path $reportsFolder -ChildPath "$computerName.txt"
+
+# This creats the file using the new file name above, then writes everything from the PCINFO array to the txt file
+Set-Content -Path $filePath -Value $PCINFO
+
+## Ideally I will reduce the comments and sources here and move some of it to the Annotated Bibiography
